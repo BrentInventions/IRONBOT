@@ -1,0 +1,158 @@
+/* Airborne theme overrides — layered on hud.css */
+
+.wordmark-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.wordmark-sub {
+  font-family: var(--font-display);
+  font-size: clamp(0.52rem, 1.1vmin, 0.68rem);
+  letter-spacing: 0.38em;
+  color: var(--eclipse);
+  text-shadow: 0 0 10px rgba(255, 193, 74, 0.45);
+  opacity: 0.92;
+}
+
+.panel-head {
+  border-bottom-color: rgba(255, 140, 50, 0.22);
+  background: linear-gradient(90deg, rgba(255, 193, 74, 0.06), rgba(255, 92, 26, 0.04), transparent 55%);
+}
+
+.panel-head .tick {
+  box-shadow: 0 0 8px rgba(255, 193, 74, 0.65);
+}
+
+.dev-ticker {
+  border-top-color: rgba(255, 140, 50, 0.18);
+  border-bottom-color: rgba(255, 92, 26, 0.18);
+  background: linear-gradient(90deg, rgba(255, 193, 74, 0.04), transparent 30%, transparent 70%, rgba(255, 92, 26, 0.04));
+}
+
+.dev-ticker-chunk strong {
+  color: var(--eclipse);
+  text-shadow: 0 0 14px rgba(255, 193, 74, 0.55);
+}
+
+.dev-tag {
+  color: var(--neon-magenta);
+  text-shadow: 0 0 8px rgba(255, 92, 26, 0.45);
+}
+
+.dev-sep {
+  color: rgba(255, 193, 74, 0.35);
+}
+
+.dev-cursor {
+  color: var(--eclipse);
+  text-shadow: 0 0 8px rgba(255, 193, 74, 0.75);
+}
+
+.brand-logo {
+  object-fit: cover;
+  object-position: center 32%;
+  border: 1px solid rgba(255, 193, 74, 0.55);
+  clip-path: polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px));
+  filter: drop-shadow(0 0 8px rgba(255, 140, 50, 0.45)) drop-shadow(0 0 16px rgba(255, 193, 74, 0.2));
+}
+
+.wordmark {
+  color: var(--eclipse);
+  text-shadow:
+    0 0 14px rgba(255, 193, 74, 0.55),
+    0 0 28px rgba(255, 120, 40, 0.25);
+}
+
+.wordmark span {
+  color: var(--neon-magenta);
+  text-shadow:
+    0 0 14px rgba(255, 92, 26, 0.55),
+    0 0 28px rgba(255, 60, 20, 0.25);
+}
+
+.chip {
+  border-color: rgba(255, 120, 50, 0.35);
+  background: rgba(12, 2, 1, 0.82);
+}
+
+.chip.on {
+  border-color: rgba(255, 193, 74, 0.55);
+  box-shadow: 0 0 10px rgba(255, 193, 74, 0.22);
+}
+
+.side-kicker {
+  color: var(--eclipse);
+  text-shadow: 0 0 10px rgba(255, 193, 74, 0.35);
+}
+
+.bar i {
+  background: linear-gradient(90deg, var(--neon-magenta), var(--neon-cyan)) !important;
+  box-shadow: 0 0 10px rgba(255, 193, 74, 0.35);
+}
+
+.bar.vel i {
+  background: linear-gradient(90deg, #ff5c1a, #ffc14a) !important;
+}
+
+.state-pill.active {
+  border-color: rgba(255, 193, 74, 0.65);
+  color: var(--eclipse);
+  box-shadow: 0 0 10px rgba(255, 193, 74, 0.45);
+}
+
+.state-pill.done {
+  color: var(--neon-magenta);
+}
+
+.trade-banner.live {
+  color: var(--eclipse);
+  border-color: rgba(255, 193, 74, 0.55);
+  box-shadow: 0 0 14px rgba(255, 193, 74, 0.2);
+}
+
+.btn-buy {
+  border-color: rgba(255, 193, 74, 0.65) !important;
+  color: var(--eclipse) !important;
+  box-shadow: 0 0 16px rgba(255, 193, 74, 0.25);
+}
+
+.btn-sell {
+  border-color: rgba(255, 92, 26, 0.65) !important;
+  color: #ffd0a8 !important;
+  box-shadow: 0 0 16px rgba(255, 92, 26, 0.2);
+}
+
+#btn-enable.on {
+  border-color: #00ff41;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.55);
+}
+
+.tune-section-head {
+  color: var(--neon-magenta);
+  text-shadow: 0 0 8px rgba(255, 92, 26, 0.35);
+}
+
+.boot .hud-grid {
+  animation: airborne-boot 0.9s ease-out;
+}
+
+@keyframes airborne-boot {
+  from {
+    transform: translateY(6px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.hud-tab.is-active {
+  color: var(--eclipse);
+  border-color: rgba(255, 193, 74, 0.65);
+  box-shadow: 0 0 14px rgba(255, 193, 74, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eclipse-ring { animation: none; }
+  .boot .hud-grid { animation: none; }
+}

@@ -1,0 +1,119 @@
+/* Impulse Pro Bot — black / red HUD tokens (same family as the site + dongle) */
+
+:root {
+  color-scheme: dark;
+  --bg-0: #050203;
+  --bg-1: #0c0507;
+  --surface: rgba(8, 2, 4, 0.92);
+  --surface-raised: rgba(14, 4, 6, 0.96);
+  --line-dim: #2a1014;
+  --line-mid: #4a181c;
+  --neon-cyan: #e10600;
+  --neon-magenta: #ff3b2f;
+  --neon-green: #16e06a;
+  --neon-purple: #7a0c10;
+  --energy-blue: #c41616;
+  --energy-cyan: #e10600;
+  --energy-ice: #f6ecec;
+  --glow-core: #ffffff;
+  --glow-edge: #e10600;
+  --glow-halo: rgba(225, 6, 0, 0.42);
+  --glow-magenta: rgba(255, 59, 47, 0.38);
+  --glow-bloom: rgba(225, 6, 0, 0.12);
+  --matrix: #16e06a;
+  --text-1: #f6ecec;
+  --text-2: #c9a8a8;
+  --text-3: #9a7d7d;
+  --success: #16e06a;
+  --danger: #ff2a55;
+  --warn: #ffe600;
+  --font-display: Bahnschrift, "Segoe UI Variable Display", "Segoe UI", sans-serif;
+  --font-ui: "Segoe UI Variable Text", "Segoe UI", sans-serif;
+  --font-mono: Consolas, "Cascadia Mono", monospace;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-0);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-weight: 500;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+canvas,
+svg,
+.hud-atmosphere,
+.hud-atmosphere *,
+.fx-canvas,
+.motes-canvas,
+.shell-frame {
+  pointer-events: none !important;
+  -webkit-app-region: no-drag;
+}
+
+button,
+input,
+select,
+textarea,
+label,
+.hud-tab,
+#ctrl-panel,
+#ctrl-panel * {
+  pointer-events: auto !important;
+  -webkit-app-region: no-drag !important;
+}
+
+.fx-canvas,
+.motes-canvas {
+  display: none !important;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid rgba(225, 6, 0, 0.45);
+  background: linear-gradient(180deg, rgba(20, 6, 8, 0.95), rgba(0, 0, 0, 0.98));
+  color: var(--energy-ice);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.42rem 0.72rem;
+  clip-path: polygon(0 7px, 7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%);
+  transition: border-color 0.13s, box-shadow 0.13s, color 0.13s, background 0.13s;
+  text-shadow: 0 0 8px rgba(225, 6, 0, 0.25);
+}
+
+button:hover {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 16px var(--glow-halo), inset 0 0 12px rgba(225, 6, 0, 0.06);
+  color: var(--glow-core);
+}
+
+button.on {
+  border-color: var(--neon-magenta);
+  background: linear-gradient(180deg, rgba(40, 0, 30, 0.55), rgba(0, 0, 0, 0.98));
+  color: var(--glow-core);
+  box-shadow: 0 0 20px var(--glow-magenta), 0 0 0 1px rgba(255, 0, 170, 0.2) inset;
+}
+
+button.danger.on,
+button.danger:hover {
+  border-color: var(--danger);
+  color: #ffb8c8;
+  box-shadow: 0 0 14px rgba(255, 42, 85, 0.4);
+}
+
+button:disabled { opacity: 0.35; cursor: default; box-shadow: none; text-shadow: none; }
+
+input[type="range"] { accent-color: var(--neon-magenta); background: transparent; }
+input[type="checkbox"] { accent-color: var(--neon-magenta); }

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IRONBOT</title>
+  <link rel="icon" type="image/x-icon" href="assets/icons/iron-bot.ico" />
+  <link rel="icon" type="image/png" href="assets/icons/iron-bot.png" />
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+  <link rel="stylesheet" href="styles/hud.css" />
+  <link rel="stylesheet" href="styles/ironman.css" />
+</head>
+<body class="theme-ironman">
+  <div class="stage boot" id="stage">
+    <div class="hud-atmosphere" aria-hidden="true">
+      <div class="ambient-field"></div>
+      <div class="iron-art iron-art-collage"></div>
+      <div class="logo-watermark"></div>
+      <div class="iron-art iron-art-comic"></div>
+      <div class="iron-art iron-art-split"></div>
+      <div class="cyber-grid"></div>
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+      <canvas class="motes-canvas" id="motes"></canvas>
+      <div class="vignette"></div>
+      <div class="scanlines"></div>
+      <div class="hud-sweep"></div>
+      <svg class="frame-svg" viewBox="0 0 1600 900" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="neonStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#e10600"/>
+            <stop offset="50%" stop-color="#ffb000"/>
+            <stop offset="100%" stop-color="#7ad7ff"/>
+          </linearGradient>
+          <filter id="neonGlow">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <rect x="18" y="18" width="1564" height="864" fill="none" stroke="url(#neonStroke)" stroke-width="1.2" opacity="0.55" filter="url(#neonGlow)"/>
+        <path d="M40 70 V40 H70" fill="none" stroke="#e10600" stroke-width="2" opacity="0.85" filter="url(#neonGlow)"/>
+        <path d="M1530 70 V40 H1560" fill="none" stroke="#ffb000" stroke-width="2" opacity="0.85" filter="url(#neonGlow)"/>
+        <path d="M40 830 V860 H70" fill="none" stroke="#ffb000" stroke-width="2" opacity="0.85" filter="url(#neonGlow)"/>
+        <path d="M1530 830 V860 H1560" fill="none" stroke="#e10600" stroke-width="2" opacity="0.85" filter="url(#neonGlow)"/>
+      </svg>
+    </div>
+    <div class="shell-frame" aria-hidden="true"></div>
+
+    <div class="hud-shell">
+      <header id="brand" class="panel brand-slot">
+        <div class="brand-row">
+          <img class="brand-logo" src="assets/ironman/helmet.jpg" alt="IRONBOT" width="72" height="72" />
+          <div class="wordmark" id="wordmark">IRON<span>BOT</span></div>
+          <div class="brand-meta">
+            <span class="chip" id="chip-mode">NT LIVE</span>
+            <span class="chip" id="chip-link">OFFLINE</span>
+            <span class="chip" id="chip-state">IDLE</span>
+            <span class="chip" id="chip-session">—</span>
+            <span class="chip" id="chip-trade">FLAT</span>
+          </div>
+          <div class="money-hero" id="money-hero">
+            <div class="money-block">
+              <div class="lbl">PNL <button type="button" class="pnl-reset-mini" id="btn-pnl-reset-hero" title="Reset session PnL">RESET</button></div>
+              <div class="amt" id="hero-pnl">+$0.00</div>
+            </div>
+            <div class="money-block">
+              <div class="lbl">BALANCE <span>NT</span></div>
+              <div class="amt wait" id="hero-bal">WAITING</div>
+            </div>
+          </div>
+          <div class="ema-lamps" id="ema-lamps" title="Lights up when price passes red / white / blue">
+            <span class="ema-lamp red" id="lamp-red"><i></i><em>9</em></span>
+            <span class="ema-lamp white" id="lamp-white"><i></i><em>20</em></span>
+            <span class="ema-lamp blue" id="lamp-blue"><i></i><em>50</em></span>
+          </div>
+          <div class="price" id="price">—</div>
+        </div>
+        <div class="dev-ticker" aria-label="IRONBOT">
+          <div class="dev-ticker-fade dev-ticker-fade-left"></div>
+          <div class="dev-ticker-fade dev-ticker-fade-right"></div>
+          <div class="dev-ticker-track">
+            <span class="dev-ticker-chunk">
+              <span class="dev-tag">IRONBOT</span>
+              <span class="dev-sep">///</span>
+              JARVIS ONLINE · STARK PROTOCOL BY <strong>BrentBangz</strong><span class="dev-cursor">▮</span>
+              <span class="dev-sep">///</span>
+              <span class="dev-tag">ARC REACTOR</span>
+              <span class="dev-sep">///</span>
+            </span>
+            <span class="dev-ticker-chunk" aria-hidden="true">
+              <span class="dev-tag">IRONBOT</span>
+              <span class="dev-sep">///</span>
+              JARVIS ONLINE · STARK PROTOCOL BY <strong>BrentBangz</strong><span class="dev-cursor">▮</span>
+              <span class="dev-sep">///</span>
+              <span class="dev-tag">ARC REACTOR</span>
+              <span class="dev-sep">///</span>
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <nav class="hud-tab-bar" aria-label="HUD views">
+        <button type="button" class="hud-tab is-active" data-view="trade">TRADE</button>
+        <button type="button" class="hud-tab" data-view="strategy">ENTRY / EXIT</button>
+        <button type="button" class="hud-tab" data-view="logs">PNL LOG</button>
+        <button type="button" class="hud-tab" data-view="tuning">ENTRY TUNING</button>
+      </nav>
+
+      <div class="hud-views">
+        <div class="hud-view is-active" id="view-trade">
+          <div class="hud-grid hud-grid-trade">
+      <section id="long-panel" class="panel glass">
+        <div class="panel-head"><span class="tick"></span> CONFIDENCE <span class="badge" id="long-badge">0</span></div>
+        <div class="panel-body sides-body">
+          <div class="side-block side-long">
+            <div class="side-kicker" id="kicker-long">RECON LONG</div>
+            <div class="meter-row"><span>CONF</span><div class="bar"><i id="long-conf-bar"></i></div><strong id="long-conf">0</strong></div>
+            <div class="meter-row"><span>VEL</span><div class="bar vel" id="long-vel-bar-wrap"><i id="long-vel-bar"></i></div><strong id="long-vel">0</strong></div>
+            <div class="meter-row"><span>OPP</span><div class="bar opp"><i id="long-opp-bar"></i></div><strong id="long-opp">0</strong></div>
+            <div class="meter-row"><span>EXT</span><div class="bar ext"><i id="long-ext-bar"></i></div><strong id="long-ext">0</strong></div>
+          </div>
+          <div class="side-block side-short">
+            <div class="side-mini-head">
+              <div class="side-kicker" id="kicker-short">RECON SHORT</div>
+              <span class="badge" id="short-badge">0</span>
+            </div>
+            <div class="meter-row"><span>CONF</span><div class="bar"><i id="short-conf-bar"></i></div><strong id="short-conf">0</strong></div>
+            <div class="meter-row"><span>VEL</span><div class="bar vel" id="short-vel-bar-wrap"><i id="short-vel-bar"></i></div><strong id="short-vel">0</strong></div>
+            <div class="meter-row"><span>OPP</span><div class="bar opp"><i id="short-opp-bar"></i></div><strong id="short-opp">0</strong></div>
+            <div class="meter-row"><span>EXT</span><div class="bar ext"><i id="short-ext-bar"></i></div><strong id="short-ext">0</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="core-panel" class="panel glass">
+        <div class="panel-head"><span class="tick"></span> EVENT ENGINE <span class="badge" id="core-badge">WATCHING</span></div>
+        <div class="panel-body">
+          <div class="rsi-gauge" id="rsi-gauge" title="RSI(14) — flashes in OB/OS trading zones">
+            <div class="rsi-head">
+              <span class="rsi-label">RSI 14</span>
+              <span class="rsi-zone" id="rsi-zone">NEUTRAL</span>
+            </div>
+            <div class="rsi-value" id="rsi-value">—</div>
+            <div class="rsi-track" aria-hidden="true">
+              <div class="rsi-marks"><span>25</span><span>50</span><span>75</span></div>
+              <div class="rsi-bar"><i id="rsi-bar"></i></div>
+              <div class="rsi-needle" id="rsi-needle"></div>
+            </div>
+            <div class="rsi-meta">
+              <span>EXT ↑/↓ <b id="rsi-ext">—</b></span>
+              <span>MOM <b id="rsi-mom">—</b></span>
+            </div>
+            <div class="rsi-meta">
+              <span>MACD Δ <b id="rsi-macd">—</b></span>
+              <span>CHASE L/S <b id="rsi-chase">—</b></span>
+            </div>
+          </div>
+          <div class="core-stack">
+          <div class="state-track" id="state-track"></div>
+          <div class="trade-banner idle" id="trade-banner">FLAT · WATCHING</div>
+          <div class="event-card" id="event-card"><div class="idle">NO ACTIVE EVENT</div></div>
+          <div class="scout-card" id="scout-card">
+            <div class="scout-head">
+              <span class="scout-tag">INTERSECTION</span>
+              <span class="badge" id="scout-badge">WATCH</span>
+            </div>
+            <div class="scout-call" id="scout-call">FLAT · READING LINES</div>
+            <ul class="ix-status" id="ix-status">
+              <li>EMA SEPARATION · —</li>
+              <li>9/20 CROSS · WAITING</li>
+              <li>9/50 CONFIRM · WAITING</li>
+              <li>TIGHT STRUCTURE · —</li>
+            </ul>
+            <ul class="scout-bullets" id="scout-bullets">
+              <li>WAITING FOR SPREAD 9/20 THEN 9/50</li>
+            </ul>
+          </div>
+          <div class="kv">
+            <span>TREND <b id="kv-bias">—</b></span>
+            <span>REGIME <b id="kv-regime">—</b></span>
+            <span>STRUCTURE <b id="kv-struct">—</b></span>
+            <span>VOL <b id="kv-vol">—</b></span>
+            <span>ATR <b id="kv-atr">—</b></span>
+            <span>VWAP <b id="kv-vwap">—</b></span>
+            <span>VELOCITY <b id="kv-velocity">—</b></span>
+            <span>IMPULSE <b id="kv-impulse">—</b></span>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="exit-panel" class="panel glass">
+        <div class="panel-head"><span class="tick"></span> EXIT HOLD <span class="badge" id="exit-badge">FLAT</span></div>
+        <div class="panel-body exit-body">
+          <div class="exit-leds" id="exit-leds" aria-label="Hold phase lights"></div>
+          <div class="exit-meters" id="exit-meters">
+            <div class="exit-meter" data-meter="r"><span>R</span><div class="bar"><i id="exit-r-bar"></i></div><strong id="exit-r-val">0.00R</strong></div>
+            <div class="exit-meter" data-meter="give"><span>GBK</span><div class="bar give"><i id="exit-give-bar"></i></div><strong id="exit-give-val">0%</strong></div>
+            <div class="exit-meter" data-meter="spr"><span>SPR</span><div class="bar spr"><i id="exit-spr-bar"></i></div><strong id="exit-spr-val">—</strong></div>
+          </div>
+          <ul class="exit-bullets" id="exit-bullets">
+            <li>NO HOLD · WAITING FOR ENTRY</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="log-panel" class="panel glass">
+        <div class="panel-head"><span class="tick"></span> SYSTEMS</div>
+        <div class="panel-body">
+          <div class="dual-sys">
+            <div class="sys-col" id="sys-ema">
+              <div class="sys-head">9 / 20 / 50 <span class="badge" id="ema-sys-badge">WATCH</span></div>
+              <ul class="gate-list" id="ema-gates"></ul>
+              <div class="log sys-log" id="log-ema"></div>
+            </div>
+            <div class="sys-col" id="sys-tcm8">
+              <div class="sys-head">8TCM <span class="badge" id="tcm8-sys-badge">WATCH</span></div>
+              <ul class="gate-list" id="tcm8-gates"></ul>
+              <div class="log sys-log" id="log-tcm8"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="stats-panel" class="panel glass">
+        <div class="panel-head"><span class="tick"></span> PNL LOG <span class="badge" id="plog-badge">FLAT</span></div>
+        <div class="panel-body">
+          <div class="stats-grid">
+            <div class="stat"><div class="lbl">Trades</div><div class="val" id="st-trades">0</div></div>
+            <div class="stat"><div class="lbl">W / L</div><div class="val" id="st-wl">0 / 0</div></div>
+            <div class="stat"><div class="lbl">Net $</div><div class="val" id="st-pnl">0</div></div>
+            <div class="stat"><div class="lbl">Expectancy</div><div class="val" id="st-exp">0</div></div>
+            <div class="stat"><div class="lbl">PF</div><div class="val" id="st-pf">0</div></div>
+            <div class="stat"><div class="lbl">DD</div><div class="val" id="st-dd">0</div></div>
+            <div class="stat"><div class="lbl">MFE cap</div><div class="val" id="st-mfe">0</div></div>
+          </div>
+          <div class="plog-cols" aria-hidden="true">
+            <span>TIME</span><span>SIDE</span><span>ENTRY → EXIT</span><span>PTS</span><span>PNL $</span><span>REASON</span>
+          </div>
+          <div class="plog-list" id="plog-list" role="list"></div>
+          <div class="plog-empty" id="plog-empty">No trades this session</div>
+          <div class="stats-decisions">
+            <div class="stats-decisions-head">DECISIONS</div>
+            <div class="log" id="log-stats"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="ctrl-panel" class="panel glass">
+        <div class="panel-head"><span class="tick"></span> CONTROL</div>
+        <div class="panel-body">
+          <div class="ctrl-row qty-row">
+            <span class="qty-label">MNQ</span>
+            <button id="btn-qty-down">−</button>
+            <strong id="qty-val">1</strong>
+            <button id="btn-qty-up">+</button>
+            <span class="qty-bank" id="qty-bank">BANK $25</span>
+          </div>
+          <div class="ctrl-row qty-row goal-row">
+            <span class="qty-label">GOAL</span>
+            <button id="btn-goal-down">−</button>
+            <strong id="goal-val">350</strong>
+            <button id="btn-goal-up">+</button>
+            <span class="qty-bank" id="goal-remain">LEFT $350</span>
+          </div>
+          <div class="ctrl-row qty-row clock-row">
+            <span class="qty-label">CLOCK</span>
+            <button id="btn-clock-down">−</button>
+            <strong id="clock-val">2.0H</strong>
+            <button id="btn-clock-up">+</button>
+            <span class="qty-bank" id="clock-remain">2:00 LEFT</span>
+          </div>
+          <div class="ctrl-row qty-row">
+            <span class="qty-label">STOP</span>
+            <button id="btn-stop-down">−</button>
+            <strong id="stop-val">20</strong>
+            <button id="btn-stop-up">+</button>
+            <span class="qty-bank" id="stop-dollars">$40</span>
+          </div>
+          <div class="ctrl-row manual-row">
+            <button type="button" class="btn-buy" id="btn-buy" title="Market long at current qty. Exit control takes over after NT fill.">BUY</button>
+            <button type="button" class="btn-sell" id="btn-sell" title="Market short at current qty. Exit control takes over after NT fill.">SHORT</button>
+            <button type="button" class="danger" id="btn-flat" title="Flatten the live position">EXIT</button>
+          </div>
+          <div class="ctrl-row">
+            <button id="btn-enable" title="Disarmed — click to arm. No trades until this flashes.">ARM</button>
+            <button id="btn-pnl-reset" class="btn-pnl-reset" title="Zero session PnL, W-L, and goal clock">RESET PNL</button>
+          </div>
+          <div class="ctrl-row">
+            <button type="button" id="btn-ema-strategy" class="btn-ema-strategy" title="Same as 9/20/50 MODE on ENTRY / EXIT.">9/20/50</button>
+            <button type="button" id="btn-grow-mode" class="btn-grow-mode" title="Off lets the $100 tip trail / 70% MFE runner work. On banks a $50+ stall.">GROW BANK</button>
+          </div>
+          <div class="hint">Port <span id="hint-port">5564</span> · <span id="hint-bridge">ReconSniperBridge</span> · <span id="hint-license">LICENSE: REQUIRED</span> · strategy on ENTRY / EXIT</div>
+        </div>
+      </section>
+          </div>
+        </div>
+
+        <div class="hud-view" id="view-strategy">
+          <section id="strategy-panel" class="panel glass">
+            <div class="panel-head">
+              <span class="tick"></span> ENTRY / EXIT
+              <span class="badge" id="strategy-badge">LIVE</span>
+            </div>
+            <div class="panel-body strategy-body">
+              <label class="mode-toggle" title="EMA 9/20/50 sniper longs and shorts. Off = this method does not fire.">
+                <span class="mode-toggle-row">
+                  <input type="checkbox" data-strategy="ema_92050" />
+                  <span class="mode-toggle-name">9/20/50 MODE</span>
+                </span>
+                <span class="mode-toggle-hint">On = EMA sniper preset can trade. Off = 9/20/50 will not enter.</span>
+              </label>
+              <label class="mode-toggle" title="8-EMA continuation. Off = this method does not fire. One live trade — if one system fires, the other waits until flat.">
+                <span class="mode-toggle-row">
+                  <input type="checkbox" data-strategy="tcm8" />
+                  <span class="mode-toggle-name">8TCM MODE</span>
+                </span>
+                <span class="mode-toggle-hint">On = 8TCM preset can trade. Off = 8TCM will not enter.</span>
+              </label>
+              <div class="tune-note">Each switch loads that method’s preset. Both can be on; only one trade is open at a time. ARM / GROW BANK stay on TRADE.</div>
+            </div>
+          </section>
+        </div>
+
+        <div class="hud-view" id="view-logs">
+          <div class="hud-grid hud-grid-logs">
+            <section id="stats-panel-tab" class="panel glass">
+              <div class="panel-head"><span class="tick"></span> PNL LOG <span class="badge" id="plog-badge-tab">FLAT</span></div>
+              <div class="panel-body">
+                <div class="stats-grid">
+                  <div class="stat"><div class="lbl">Trades</div><div class="val" id="st-trades-tab">0</div></div>
+                  <div class="stat"><div class="lbl">W / L</div><div class="val" id="st-wl-tab">0 / 0</div></div>
+                  <div class="stat"><div class="lbl">Net $</div><div class="val" id="st-pnl-tab">0</div></div>
+                  <div class="stat"><div class="lbl">Expectancy</div><div class="val" id="st-exp-tab">0</div></div>
+                  <div class="stat"><div class="lbl">PF</div><div class="val" id="st-pf-tab">0</div></div>
+                  <div class="stat"><div class="lbl">DD</div><div class="val" id="st-dd-tab">0</div></div>
+                  <div class="stat"><div class="lbl">MFE cap</div><div class="val" id="st-mfe-tab">0</div></div>
+                </div>
+                <div class="plog-cols" aria-hidden="true">
+                  <span>TIME</span><span>SIDE</span><span>ENTRY → EXIT</span><span>PTS</span><span>PNL $</span><span>REASON</span>
+                </div>
+                <div class="plog-list" id="plog-list-tab" role="list"></div>
+                <div class="plog-empty" id="plog-empty-tab">No trades this session</div>
+              </div>
+            </section>
+
+            <section id="log-panel-tab" class="panel glass">
+              <div class="panel-head"><span class="tick"></span> DECISIONS</div>
+              <div class="panel-body">
+                <div class="log" id="log-tab"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="hud-view" id="view-tuning">
+          <section id="tune-panel" class="panel glass">
+        <div class="panel-head">
+          <span class="tick"></span> ENTRY TUNING
+          <span class="badge" id="tune-mode-badge">PRESET</span>
+          <button type="button" class="tune-reset-btn" id="btn-tune-reset">RESET</button>
+        </div>
+        <div class="panel-body tune-body">
+          <div class="tune-col tune-master">
+            <div class="tune-label">STRICTNESS <span class="tune-hint">loose ← → picky</span></div>
+            <div class="tune-slider-row">
+              <input type="range" id="tune-strictness" min="40" max="75" step="1" value="50" />
+              <output id="tune-strictness-val">50</output>
+            </div>
+            <div class="tune-note">Moves all gates together. Override any knob below for custom mix.</div>
+          </div>
+          <div class="tune-col">
+            <div class="tune-section-head">TREND ENTRIES</div>
+            <div class="tune-knob" data-gate="confidence" data-scope="trend">
+              <label>CONF min <output></output></label>
+              <input type="range" step="1" />
+            </div>
+            <div class="tune-knob" data-gate="opportunity" data-scope="trend">
+              <label>OPP min <output></output></label>
+              <input type="range" step="1" />
+            </div>
+            <div class="tune-knob" data-gate="conf_velocity" data-scope="trend">
+              <label>VEL min <output></output></label>
+              <input type="range" step="0.01" />
+            </div>
+            <div class="tune-knob" data-gate="max_extension" data-scope="trend">
+              <label>EXT max <output></output></label>
+              <input type="range" step="1" />
+            </div>
+            <div class="tune-knob" data-gate="build_ticks" data-scope="trend">
+              <label>BUILD ticks <output></output></label>
+              <input type="range" step="1" />
+            </div>
+            <div class="tune-knob" data-gate="tick_velocity" data-scope="trend">
+              <label>TICK vel <output></output></label>
+              <input type="range" step="0.01" />
+            </div>
+          </div>
+          <div class="tune-col tune-toggles">
+            <div class="tune-section-head">GATES</div>
+            <label class="tune-check"><input type="checkbox" id="toggle-trending" /> Require TRENDING</label>
+            <label class="tune-check"><input type="checkbox" id="toggle-choppy-bias" /> Choppy with bias</label>
+            <label class="tune-check"><input type="checkbox" id="toggle-chaotic" /> Chaotic quick bank</label>
+            <label class="tune-check"><input type="checkbox" id="toggle-grow-mode" /> Grow bank ($50 stall clip)</label>
+            <label class="tune-check tune-check-exp"><input type="checkbox" id="toggle-experimental" /> Mark II experimental (Phase 1)</label>
+            <label class="tune-check"><input type="checkbox" id="toggle-candles" /> Candle alignment</label>
+            <label class="tune-check"><input type="checkbox" id="toggle-book-patterns" /> Book patterns only <span class="tune-hint">(auto-clears other gates · RSI override stays)</span></label>
+            <label class="tune-check"><input type="checkbox" id="toggle-exhaustion" /> RSI override · OS→BUY / OB→SHORT</label>
+          </div>
+        </div>
+      </section>
+        </div>
+      </div>
+    </div>
+    <canvas id="fx-canvas" class="fx-canvas" aria-hidden="true"></canvas>
+    <div id="exit-flash" class="exit-flash hidden" aria-hidden="true"></div>
+    <div id="milestone-toast" class="milestone-toast hidden" aria-live="assertive">
+      <div class="ms-burst" aria-hidden="true"></div>
+      <div class="ms-kicker" id="ms-kicker">MILESTONE</div>
+      <div class="ms-title" id="ms-title"></div>
+      <div class="ms-sub" id="ms-sub"></div>
+    </div>
+    <aside id="pnl-pop" class="pnl-pop hidden">
+      <canvas class="pnl-fx" id="pnl-fx" aria-hidden="true"></canvas>
+      <div class="pnl-head">
+        <span id="pnl-side">FLAT</span>
+        <span class="pnl-sim" id="pnl-sim">NT LIVE</span>
+      </div>
+      <div class="pnl-state" id="pnl-state">PROBATION</div>
+      <div class="pnl-dollars" id="pnl-dollars">$0.00</div>
+      <div class="pnl-pts" id="pnl-pts">0.0 pts</div>
+      <div class="pnl-marks" id="pnl-marks"></div>
+      <div class="pnl-grid">
+        <span>ENTRY <b id="pnl-entry">—</b></span>
+        <span>STOP <b id="pnl-stop">—</b></span>
+        <span>FLOOR <b id="pnl-target">—</b></span>
+        <span>MFE <b id="pnl-mfe">—</b></span>
+        <span>MAE <b id="pnl-mae">—</b></span>
+        <span>HOLD <b id="pnl-hold">—</b></span>
+      </div>
+    </aside>
+    <div id="book-flash" class="book-flash hidden" aria-live="polite">
+      <div class="book-flash-tag">BOOK</div>
+      <div class="book-flash-name" id="book-flash-name">—</div>
+      <div class="book-flash-side" id="book-flash-side">—</div>
+    </div>
+  </div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+logs/
+*.jsonl
+mark2_settings.json
+mark2_email.json
+.DS_Store
+Thumbs.db
+.venv/
+venv/
+env/
+*.egg-info/
+*.zip
+data/dongle_host/

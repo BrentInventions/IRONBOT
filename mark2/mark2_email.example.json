@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "smtp_host": "smtp.gmail.com",
+  "smtp_port": 587,
+  "username": "your-bot-alerts@gmail.com",
+  "password": "your-16-char-gmail-app-password",
+  "from_addr": "your-bot-alerts@gmail.com",
+  "to_addr": "your-bot-alerts@gmail.com"
+}

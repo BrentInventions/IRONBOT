@@ -1,0 +1,229 @@
+/* Gamma smash HUD — original green/purple skin. Not Marvel artwork or marks. */
+
+:root {
+  --bg-0: #040805;
+  --bg-1: #0a140c;
+  --surface: rgba(6, 16, 8, 0.94);
+  --surface-raised: rgba(10, 22, 12, 0.97);
+  --line-dim: #1a3320;
+  --line-mid: #2e5538;
+  --neon-cyan: #5cff3d;
+  --neon-magenta: #b388ff;
+  --neon-green: #7cff4a;
+  --neon-purple: #7b2cbf;
+  --energy-blue: #9b59b6;
+  --energy-cyan: #3dff6b;
+  --energy-ice: #e8ffe8;
+  --glow-core: #f4fff0;
+  --glow-edge: #7cff4a;
+  --glow-halo: rgba(92, 255, 61, 0.45);
+  --glow-magenta: rgba(179, 136, 255, 0.4);
+  --glow-bloom: rgba(61, 255, 107, 0.14);
+  --matrix: #7cff4a;
+  --text-1: #eefae8;
+  --text-2: #b7d4b0;
+  --text-3: #7fa07a;
+  --success: #7cff4a;
+  --danger: #ff4d6a;
+  --warn: #ffe600;
+  --font-display: Impact, "Arial Black", Bahnschrift, sans-serif;
+  --font-ui: Bahnschrift, "Segoe UI", sans-serif;
+  --font-mono: Consolas, "Cascadia Mono", monospace;
+  --hulk-green: #5cff3d;
+  --hulk-lime: #b6ff00;
+  --hulk-purple: #9b59b6;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea,
+label,
+.hud-tab {
+  font-family: var(--font-display) !important;
+}
+
+button {
+  border-color: rgba(92, 255, 61, 0.45);
+  text-shadow: 0 0 8px rgba(92, 255, 61, 0.28);
+}
+
+button:hover {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 16px var(--glow-halo), inset 0 0 12px rgba(92, 255, 61, 0.08);
+}
+
+button.on {
+  border-color: var(--neon-magenta);
+  background: linear-gradient(180deg, rgba(40, 0, 55, 0.55), rgba(0, 0, 0, 0.98));
+  box-shadow: 0 0 20px var(--glow-magenta), 0 0 0 1px rgba(155, 89, 182, 0.25) inset;
+}
+
+input[type="range"],
+input[type="checkbox"] {
+  accent-color: var(--hulk-green);
+}
+
+.ambient-field {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(92, 255, 61, 0.18), transparent 42%),
+    radial-gradient(circle at 82% 78%, rgba(123, 44, 191, 0.16), transparent 38%),
+    linear-gradient(180deg, #071208 0%, #040805 55%, #000 100%) !important;
+}
+
+.logo-watermark {
+  filter: hue-rotate(110deg) saturate(1.35) brightness(1.05);
+}
+
+.orb-a { background: rgba(92, 255, 61, 0.42) !important; }
+.orb-b { background: rgba(155, 89, 182, 0.28) !important; }
+
+.cyber-grid {
+  background-image:
+    linear-gradient(rgba(92, 255, 61, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123, 44, 191, 0.08) 1px, transparent 1px) !important;
+}
+
+.vignette {
+  background:
+    radial-gradient(ellipse 55% 48% at 50% 40%, rgba(92, 255, 61, 0.07), transparent 62%),
+    radial-gradient(ellipse 90% 80% at 50% 50%, transparent 38%, rgba(0, 0, 0, 0.82) 100%) !important;
+}
+
+.scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(92, 255, 61, 0.05) 3px,
+    rgba(92, 255, 61, 0.05) 4px
+  ) !important;
+}
+
+.brand-logo {
+  filter: hue-rotate(110deg) saturate(1.25) drop-shadow(0 0 10px rgba(92, 255, 61, 0.45));
+  border-color: rgba(92, 255, 61, 0.55);
+}
+
+.wordmark {
+  color: var(--hulk-green);
+  letter-spacing: 0.12em;
+  text-shadow:
+    0 0 14px rgba(92, 255, 61, 0.55),
+    0 0 28px rgba(182, 255, 0, 0.25);
+}
+
+.wordmark span {
+  color: var(--hulk-purple);
+  text-shadow:
+    0 0 14px rgba(155, 89, 182, 0.65),
+    0 0 28px rgba(123, 44, 191, 0.3);
+}
+
+.chip {
+  border-color: rgba(92, 255, 61, 0.35);
+  background: rgba(4, 12, 6, 0.82);
+}
+
+.chip.on {
+  color: var(--neon-cyan);
+  border-color: rgba(92, 255, 61, 0.65);
+  box-shadow: 0 0 10px rgba(92, 255, 61, 0.22);
+}
+
+.panel-head {
+  border-bottom-color: rgba(92, 255, 61, 0.22);
+  background: linear-gradient(90deg, rgba(92, 255, 61, 0.07), rgba(155, 89, 182, 0.05), transparent 55%);
+}
+
+.panel-head .tick {
+  box-shadow: 0 0 8px rgba(92, 255, 61, 0.8);
+}
+
+.dev-ticker {
+  border-top-color: rgba(92, 255, 61, 0.16);
+  border-bottom-color: rgba(155, 89, 182, 0.16);
+  background: linear-gradient(90deg, rgba(92, 255, 61, 0.05), transparent 30%, transparent 70%, rgba(155, 89, 182, 0.05));
+}
+
+.dev-tag {
+  color: var(--hulk-lime);
+  text-shadow: 0 0 8px rgba(182, 255, 0, 0.45);
+}
+
+.dev-ticker-chunk strong {
+  color: var(--hulk-green);
+  text-shadow: 0 0 14px rgba(92, 255, 61, 0.55);
+}
+
+.side-kicker {
+  color: var(--hulk-green);
+  text-shadow: 0 0 10px rgba(92, 255, 61, 0.35);
+}
+
+.bar i {
+  background: linear-gradient(90deg, #1a5c22, var(--neon-cyan), var(--hulk-lime)) !important;
+  box-shadow: 0 0 10px rgba(92, 255, 61, 0.35);
+}
+
+.bar.vel i {
+  background: linear-gradient(90deg, #5b2c8a, #b388ff, #5cff3d) !important;
+}
+
+.bar.opp > i {
+  background: linear-gradient(90deg, #2a1040, var(--neon-cyan), #d4b3ff) !important;
+}
+
+.hud-tab.is-active {
+  color: var(--hulk-green);
+  border-color: rgba(92, 255, 61, 0.65);
+  box-shadow: 0 0 14px rgba(92, 255, 61, 0.18);
+}
+
+.btn-buy {
+  border-color: rgba(92, 255, 61, 0.7) !important;
+  color: var(--hulk-lime) !important;
+  box-shadow: 0 0 16px rgba(92, 255, 61, 0.28);
+}
+
+.btn-sell {
+  border-color: rgba(155, 89, 182, 0.7) !important;
+  color: #e0c4ff !important;
+  box-shadow: 0 0 16px rgba(155, 89, 182, 0.25);
+}
+
+#btn-enable.on {
+  border-color: #7cff4a;
+  box-shadow: 0 0 20px rgba(92, 255, 61, 0.55);
+}
+
+.trade-banner.live {
+  color: var(--hulk-green);
+  border-color: rgba(92, 255, 61, 0.55);
+  box-shadow: 0 0 14px rgba(92, 255, 61, 0.22);
+}
+
+.rsi-gauge.is-extreme-ob {
+  border-color: #ff4d6a;
+}
+
+.tune-section-head {
+  color: var(--hulk-purple);
+  text-shadow: 0 0 8px rgba(155, 89, 182, 0.4);
+}
+
+.gate-list,
+.gate-list li {
+  font-family: "Segoe UI", "Segoe UI Variable Text", sans-serif !important;
+  letter-spacing: 0.01em;
+}
+
+.sys-log,
+.sys-log .log-line,
+.sys-log .log-sys {
+  font-family: Consolas, "Cascadia Mono", monospace !important;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}

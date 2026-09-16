@@ -1,0 +1,341 @@
+@font-face {
+  font-family: "Audiowide";
+  src: url("../assets/fonts/Audiowide-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+:root {
+  --bg-0: #070103;
+  --bg-1: #120406;
+  --surface: rgba(18, 4, 6, 0.94);
+  --surface-raised: rgba(28, 6, 8, 0.97);
+  --line-dim: #3a1014;
+  --line-mid: #6a1c20;
+  --neon-cyan: #e10600;
+  --neon-magenta: #ffb000;
+  --neon-green: #ffd36a;
+  --neon-purple: #7a0c10;
+  --energy-blue: #c41616;
+  --energy-cyan: #ffb000;
+  --energy-ice: #fff4e4;
+  --glow-core: #ffffff;
+  --glow-edge: #e10600;
+  --glow-halo: rgba(225, 6, 0, 0.45);
+  --glow-magenta: rgba(255, 176, 0, 0.4);
+  --glow-bloom: rgba(225, 6, 0, 0.14);
+  --matrix: #ffd36a;
+  --text-1: #fff6ea;
+  --text-2: #e2c4b0;
+  --text-3: #b08978;
+  --success: #ffd36a;
+  --danger: #ff2a55;
+  --warn: #ffe600;
+  --font-display: "Audiowide", Bahnschrift, sans-serif;
+  --font-ui: "Segoe UI", "Segoe UI Variable Text", Bahnschrift, sans-serif;
+  --font-mono: Consolas, "Cascadia Mono", monospace;
+  --iron-red: #e10600;
+  --iron-gold: #ffb000;
+  --iron-arc: #7ad7ff;
+}
+
+html,
+body {
+  font-family: var(--font-ui);
+}
+
+.hud-tab,
+.wordmark,
+.panel-head,
+.sys-head,
+.dev-tag,
+.chip {
+  font-family: var(--font-display);
+}
+
+button {
+  border-color: rgba(225, 6, 0, 0.5);
+  text-shadow: 0 0 8px rgba(225, 6, 0, 0.28);
+}
+
+button:hover {
+  border-color: var(--iron-gold);
+  box-shadow: 0 0 16px var(--glow-magenta), inset 0 0 12px rgba(225, 6, 0, 0.08);
+}
+
+button.on {
+  border-color: var(--iron-gold);
+  background: linear-gradient(180deg, rgba(90, 12, 8, 0.7), rgba(0, 0, 0, 0.98));
+  box-shadow: 0 0 20px var(--glow-halo), 0 0 0 1px rgba(255, 176, 0, 0.28) inset;
+}
+
+input[type="range"],
+input[type="checkbox"] {
+  accent-color: var(--iron-red);
+}
+
+.ambient-field {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(225, 6, 0, 0.2), transparent 42%),
+    radial-gradient(circle at 82% 78%, rgba(255, 176, 0, 0.12), transparent 38%),
+    linear-gradient(180deg, #140306 0%, #070103 55%, #000 100%) !important;
+}
+
+.logo-watermark {
+  background: url("../assets/ironman/outline.png") center 42% / min(70vmin, 560px) no-repeat !important;
+  opacity: 0.12 !important;
+  mix-blend-mode: lighten;
+  filter: saturate(1.2) contrast(1.05);
+}
+
+.iron-art {
+  display: none;
+}
+
+.orb-a { background: rgba(225, 6, 0, 0.48) !important; }
+.orb-b { background: rgba(255, 176, 0, 0.22) !important; }
+
+.cyber-grid {
+  background-image:
+    linear-gradient(rgba(225, 6, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 176, 0, 0.07) 1px, transparent 1px) !important;
+}
+
+.vignette {
+  background:
+    radial-gradient(ellipse 55% 48% at 50% 40%, rgba(225, 6, 0, 0.08), transparent 62%),
+    radial-gradient(ellipse 90% 80% at 50% 50%, transparent 38%, rgba(0, 0, 0, 0.84) 100%) !important;
+}
+
+.scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(225, 6, 0, 0.05) 3px,
+    rgba(225, 6, 0, 0.05) 4px
+  ) !important;
+}
+
+.brand-logo {
+  object-fit: cover;
+  object-position: center 28%;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 176, 0, 0.55);
+  box-shadow: 0 0 16px rgba(225, 6, 0, 0.45);
+  filter: saturate(1.15) contrast(1.05);
+}
+
+.wordmark {
+  color: var(--iron-red);
+  letter-spacing: 0.1em;
+  text-shadow:
+    0 0 14px rgba(225, 6, 0, 0.7),
+    0 0 28px rgba(255, 176, 0, 0.25);
+}
+
+.wordmark span {
+  color: var(--iron-gold);
+  text-shadow:
+    0 0 14px rgba(255, 176, 0, 0.7),
+    0 0 28px rgba(225, 6, 0, 0.3);
+}
+
+.chip {
+  border-color: rgba(225, 6, 0, 0.4);
+  background: rgba(12, 2, 3, 0.82);
+}
+
+.chip.on {
+  color: var(--iron-gold);
+  border-color: rgba(255, 176, 0, 0.7);
+  box-shadow: 0 0 10px rgba(255, 176, 0, 0.28);
+}
+
+.panel-head {
+  border-bottom-color: rgba(225, 6, 0, 0.28);
+  background: linear-gradient(90deg, rgba(225, 6, 0, 0.1), rgba(255, 176, 0, 0.05), transparent 55%);
+}
+
+.panel-head .tick {
+  box-shadow: 0 0 8px rgba(225, 6, 0, 0.85);
+}
+
+.dev-ticker {
+  border-top-color: rgba(225, 6, 0, 0.2);
+  border-bottom-color: rgba(255, 176, 0, 0.18);
+  background: linear-gradient(90deg, rgba(225, 6, 0, 0.07), transparent 30%, transparent 70%, rgba(255, 176, 0, 0.06));
+}
+
+.dev-tag {
+  color: var(--iron-gold);
+  text-shadow: 0 0 8px rgba(255, 176, 0, 0.5);
+}
+
+.dev-ticker-chunk strong {
+  color: var(--iron-red);
+  text-shadow: 0 0 14px rgba(225, 6, 0, 0.55);
+}
+
+.hud-tab.is-active {
+  color: var(--iron-gold);
+  border-color: rgba(255, 176, 0, 0.55);
+}
+
+.gate-list,
+.gate-list li {
+  font-family: "Segoe UI", "Segoe UI Variable Text", sans-serif !important;
+  letter-spacing: 0.01em;
+}
+
+.sys-log,
+.sys-log .log-line,
+.sys-log .log-sys {
+  font-family: Consolas, "Cascadia Mono", monospace !important;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.sys-col {
+  border-color: rgba(225, 6, 0, 0.28);
+}
+
+.sys-col.is-ready {
+  border-color: rgba(255, 176, 0, 0.75);
+  box-shadow: 0 0 16px rgba(255, 176, 0, 0.28);
+}
+
+.trade-banner.live {
+  color: var(--iron-gold);
+  border-color: rgba(255, 176, 0, 0.55);
+  box-shadow: 0 0 14px rgba(225, 6, 0, 0.28);
+}
+
+.tune-section-head {
+  color: var(--iron-gold);
+  text-shadow: 0 0 8px rgba(255, 176, 0, 0.4);
+}
+
+.theme-ironman .mode-toggle {
+  border-color: rgba(255, 176, 0, 0.45);
+  background: rgba(8, 1, 2, 0.58);
+}
+
+.theme-ironman .mode-toggle-name {
+  color: var(--iron-gold);
+  text-shadow: 0 0 8px rgba(255, 176, 0, 0.35);
+}
+
+.theme-ironman .mode-toggle input {
+  accent-color: var(--iron-gold);
+}
+
+.theme-ironman .panel.glass {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.theme-ironman #brand.panel {
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.55), rgba(8, 1, 2, 0.18)),
+    url("../assets/ironman/helmet.jpg");
+  background-size: cover;
+  background-position: center 22%;
+}
+
+.theme-ironman #long-panel {
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.78), rgba(8, 1, 2, 0.88)),
+    url("../assets/ironman/fly.jpg");
+  background-position: center 18%, center 8%;
+}
+
+.theme-ironman #core-panel {
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.76), rgba(8, 1, 2, 0.88)),
+    url("../assets/ironman/hologram.jpg");
+  background-position: center, right 20%;
+}
+
+.theme-ironman #exit-panel {
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.74), rgba(8, 1, 2, 0.86)),
+    url("../assets/ironman/split.jpg");
+  background-position: center, center 40%;
+}
+
+.theme-ironman #log-panel {
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.78), rgba(8, 1, 2, 0.9)),
+    url("../assets/ironman/outline.png");
+  background-position: center, center 30%;
+}
+
+.theme-ironman #stats-panel,
+.theme-ironman #stats-panel-tab {
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.76), rgba(8, 1, 2, 0.9)),
+    url("../assets/ironman/visor.jpg");
+  background-position: center, center 18%;
+}
+
+.theme-ironman #ctrl-panel {
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.78), rgba(8, 1, 2, 0.9)),
+    url("../assets/ironman/rig.jpg");
+  background-position: center, center 55%;
+}
+
+.theme-ironman #strategy-panel {
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.8), rgba(8, 1, 2, 0.9)),
+    url("../assets/ironman/collage.jpg");
+  background-position: center, center 12%;
+}
+
+.theme-ironman #tune-panel {
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.8), rgba(8, 1, 2, 0.9)),
+    url("../assets/ironman/comic.jpg");
+  background-position: center, center 20%;
+}
+
+.theme-ironman #log-panel-tab {
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.78), rgba(8, 1, 2, 0.9)),
+    url("../assets/ironman/helmet.jpg");
+  background-position: center, center 22%;
+}
+
+.theme-ironman #sys-ema {
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.72), rgba(8, 1, 2, 0.84)),
+    url("../assets/ironman/fly.jpg");
+  background-size: cover;
+  background-position: center 10%;
+}
+
+.theme-ironman #sys-tcm8 {
+  background-color: transparent;
+  background-image:
+    linear-gradient(180deg, rgba(8, 1, 2, 0.88) 0%, rgba(8, 1, 2, 0.5) 32%, rgba(8, 1, 2, 0.16) 62%, rgba(8, 1, 2, 0.38) 100%),
+    url("../assets/ironman/split.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  background-position: center bottom;
+}
+
+.theme-ironman .panel-head,
+.theme-ironman .panel-body {
+  position: relative;
+  z-index: 1;
+}
+
+.theme-ironman .stat,
+.theme-ironman .sys-col,
+.theme-ironman .side-block,
+.theme-ironman .event-card,
+.theme-ironman .scout-card,
+.theme-ironman .rsi-gauge {
+  background-color: rgba(8, 1, 2, 0.42);
+}

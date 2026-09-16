@@ -204,6 +204,9 @@ def test_apply_92050_pack_independent() -> None:
     assert cfg.ENABLE_AI_SCOUT is False
     assert cfg.ENABLE_413_BREAKOUT is False
     assert cfg.ENABLE_AI_EXIT_ENGINE is True
+    assert cfg.ENABLE_8TCM_CLASSIC_TARGET is True
+    assert cfg.ENABLE_8TCM_RUNNER is True
+    assert cfg.ENABLE_8TCM_AI_EXIT is False
     assert ema_92050_live(cfg) is True
     assert snapshot(cfg)["ema_92050"] is True
     apply_strategy(cfg, {"tcm8": False})

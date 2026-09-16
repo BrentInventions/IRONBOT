@@ -193,6 +193,9 @@ def apply_92050_pack(cfg: Mark2Config, enabled: bool) -> None:
         cfg.ENABLE_MFE_RUNNER = True
         cfg.ENABLE_STRUCTURE_OVERRIDE = True
         cfg.ENABLE_MOMENTUM_REACCELERATION = True
+        cfg.ENABLE_8TCM_CLASSIC_TARGET = True
+        cfg.ENABLE_8TCM_RUNNER = True
+        cfg.ENABLE_8TCM_AI_EXIT = False
         return
     cfg.EMA_LONG_SNIPER = False
     cfg.EMA_SHORT_SNIPER = False

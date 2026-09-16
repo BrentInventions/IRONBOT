@@ -80,6 +80,7 @@ from .momentum_barriers import (
     barriers_only_mode,
     evaluate_entry_room,
     format_entry_log,
+    get_next_momentum_barrier,
     refresh_structure,
     sync_trade_barrier,
     update_session_levels,
@@ -94,6 +95,7 @@ from .tcm8 import (
     Tcm8Stats,
     aggregate_timeframe,
     apply_tcm8_runner_trail,
+    barrier_kind_label,
     evaluate_tcm8,
     tcm8_working_target,
     format_tcm8_log,
@@ -1980,6 +1982,8 @@ class Mark2Engine:
             if result == "LIVE_EXECUTE":
                 self._live_entry_wall = time.time()
                 self._live_filled = False
+            if ema_x and self.paper is not None and not str(trig).startswith("413"):
+                self._stamp_tcm8_hold()
             self._push_levels()
             trig = self._last_entry_tags.get("trigger") or ""
             self.log.write(
@@ -2677,8 +2681,48 @@ class Mark2Engine:
         return self.risk.open_side != Side.NONE
 
     def _stamp_tcm8_hold(self) -> None:
-        """Left for tests. EMA and 8TCM do not share hold rules — only the trade slot."""
-        return
+        """9/20/50 fills use the same key-level target and green/purple exit as 8TCM."""
+        t = self.paper
+        if t is None:
+            return
+        if bool(getattr(t, "tcm8", False)):
+            return
+        if not bool(getattr(t, "ema_strategy", False)):
+            return
+        tag = str(getattr(t, "ema_entry_tag", "") or "")
+        if tag.startswith("413") or tag in (
+            "EMA_RSI_LONG",
+            "EMA_INTERSECT_SHORT",
+            "EMA_CHOP_LONG",
+            "HUD_MANUAL",
+        ):
+            return
+        t.tcm8_hold = True
+        t.tcm8_runner = False
+        t.tcm8_primary_hit = False
+        t.bank_dollars_locked = 0.0
+        t.tip_trail_pts = float(getattr(self.cfg, "TCM8_TRAIL_POINTS", 5.5) or 5.5)
+        entry = float(getattr(t, "entry", 0) or 0)
+        atr_v = max(self._ema_atr(), 1e-9)
+        book = getattr(self, "_barriers", None)
+        zone = None
+        if book is not None and entry > 0:
+            try:
+                zone = get_next_momentum_barrier(t.side, entry, book, atr_v, self.cfg)
+            except Exception:
+                zone = None
+        if zone is not None and bool(getattr(zone, "found", False)) and float(getattr(zone, "price", 0) or 0) > 0:
+            t.target = round(float(zone.price), 2)
+            t.tcm8_barrier_type = barrier_kind_label(str(getattr(zone, "kind", "") or ""))
+            return
+        hard = float(getattr(t, "hard_stop", 0) or t.stop)
+        risk = abs(entry - hard)
+        pref = float(getattr(self.cfg, "TCM8_PREFERRED_TARGET_R", 1.50) or 1.50)
+        if risk > 0 and pref > 0:
+            if t.side == Side.LONG:
+                t.target = round(entry + risk * pref, 2)
+            elif t.side == Side.SHORT:
+                t.target = round(entry - risk * pref, 2)
 
     def _ema_clear_setup(self) -> None:
         self._ema_pending_side = Side.NONE

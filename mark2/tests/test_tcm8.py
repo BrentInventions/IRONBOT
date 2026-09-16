@@ -940,7 +940,7 @@ def test_8tcm_and_ema_share_one_trade_slot() -> None:
     assert snap["kickerLong"] == "8TCM LONG"
 
 
-def test_8tcm_on_restores_ema_92050_path() -> None:
+def test_8tcm_on_does_not_force_ema_92050() -> None:
     cfg = Mark2Config()
     cfg.ENABLE_EMA_STRATEGY = False
     cfg.EMA_LONG_SNIPER = False
@@ -948,8 +948,11 @@ def test_8tcm_on_restores_ema_92050_path() -> None:
     cfg.EMA_LEFTOVER_LONG = False
     apply_strategy(cfg, {"tcm8": True})
     assert cfg.ENABLE_8TCM is True
-    assert cfg.ENABLE_EMA_STRATEGY is True
-    assert cfg.EMA_LONG_SNIPER is True
+    assert cfg.ENABLE_EMA_STRATEGY is False
+    assert cfg.EMA_LONG_SNIPER is False
+    assert ema_92050_live(cfg) is False
+    assert tcm8_only_mode(cfg) is True
+    apply_strategy(cfg, {"ema_92050": True})
     assert ema_92050_live(cfg) is True
     assert tcm8_only_mode(cfg) is False
 
@@ -1018,44 +1021,73 @@ def test_8tcm_ranging_does_not_block_ema_sniper() -> None:
     assert tcm8_only_mode(eng.cfg) is False
 
 
-def test_ema_fill_keeps_own_hold_when_8tcm_on() -> None:
+def test_ema_fill_uses_8tcm_hold() -> None:
     eng = Mark2Engine(_cfg())
-    apply_strategy(eng.cfg, {"tcm8": True})
+    apply_strategy(eng.cfg, {"tcm8": False, "ema_92050": True})
     trade = PaperTrade(
         side=Side.LONG,
         entry=20000.0,
         entry_ts=1.0,
-        stop=19990.0,
-        target=0.0,
+        stop=19980.0,
+        target=20012.5,
         peak=20000.0,
         trough=20000.0,
-        hard_stop=19990.0,
+        hard_stop=19980.0,
         ema_strategy=True,
         ema_entry_tag="EMA_SNIPER",
         qty=1,
     )
     eng.paper = trade
     eng._stamp_tcm8_hold()
-    assert trade.tcm8_hold is False
+    assert trade.tcm8_hold is True
     assert trade.tcm8 is False
-    assert uses_tcm8_hold(trade) is False
+    assert uses_tcm8_hold(trade) is True
+    assert trade.tcm8_runner is False
+    # No barrier book → 1.5R fallback, same preferred R as 8TCM.
+    assert abs(trade.target - 20030.0) < 1e-9
 
 
-def test_ema_does_not_stamp_hold_when_8tcm_off() -> None:
+def test_ema_fill_uses_key_level_target() -> None:
+    eng = Mark2Engine(_cfg())
+    apply_strategy(eng.cfg, {"tcm8": False, "ema_92050": True})
+    eng._barriers = BarrierBook(previous_day_high=20040.0)
+    eng._ema_atr = lambda: 20.0  # type: ignore[method-assign]
+    trade = PaperTrade(
+        side=Side.LONG,
+        entry=20000.0,
+        entry_ts=1.0,
+        stop=19980.0,
+        target=20012.5,
+        peak=20000.0,
+        trough=20000.0,
+        hard_stop=19980.0,
+        ema_strategy=True,
+        ema_entry_tag="EMA_SNIPER",
+        qty=1,
+    )
+    eng.paper = trade
+    eng._stamp_tcm8_hold()
+    assert trade.tcm8_hold is True
+    assert abs(trade.target - 20040.0) < 1e-9
+    green = tcm8_working_target(Side.LONG, trade.target, eng.cfg)
+    assert abs(green - 20038.5) < 1e-9
+
+
+def test_ema_does_not_stamp_413() -> None:
     cfg = _cfg()
-    apply_strategy(cfg, {"tcm8": False})
+    apply_strategy(cfg, {"ema_92050": True})
     eng = Mark2Engine(cfg)
     trade = PaperTrade(
         side=Side.LONG,
         entry=20000.0,
         entry_ts=1.0,
         stop=19990.0,
-        target=0.0,
+        target=20040.0,
         peak=20000.0,
         trough=20000.0,
         hard_stop=19990.0,
         ema_strategy=True,
-        ema_entry_tag="EMA_SNIPER",
+        ema_entry_tag="413_BREAKOUT",
         qty=1,
     )
     eng.paper = trade

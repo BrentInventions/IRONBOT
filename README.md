@@ -9,8 +9,9 @@ NT chart overlay is **lines only** (gold entry, red stop, green target, purple t
 ```bat
 git clone https://github.com/BrentInventions/IRONBOT.git
 cd IRONBOT
-py -3 -m pip install -r requirements.txt
 ```
+
+Double-click `START-RECON-SNIPER.bat` — it installs Python packages the first time.
 
 1. Copy `mark2/bridge/ReconSniperBridge.cs` into  
    `Documents\NinjaTrader 8\bin\Custom\Strategies\`

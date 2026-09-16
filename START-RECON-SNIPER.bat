@@ -4,7 +4,6 @@ cd /d "%~dp0"
 title IRONBOT
 color 0A
 set "MARK2_OFFLINE_OK=1"
-set "PYTHONNOUSERSITE=1"
 set "PYTHONPATH=%~dp0"
 set "MARK2_FRONTEND=%~dp0mark2\frontend"
 set "RECON_APP_HOME=%~dp0"
@@ -21,6 +20,17 @@ if errorlevel 1 (
   set "PY=python"
 ) else (
   set "PY=py -3"
+)
+
+echo [%date% %time%] installing Python packages
+%PY% -m pip install -r "%~dp0requirements.txt"
+if errorlevel 1 (
+  echo.
+  echo  pip install failed. Run this in the IRONBOT folder:
+  echo    %PY% -m pip install -r requirements.txt
+  echo.
+  pause
+  exit /b 1
 )
 
 :retry

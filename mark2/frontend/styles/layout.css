@@ -1,9 +1,12 @@
 /* Impulse Pro Bot chassis — animated black/red atmosphere */
 
 .stage {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1600px;
+  height: 900px;
+  transform: translate(-50%, -50%);
   overflow: hidden;
   isolation: isolate;
   background: var(--bg-0);

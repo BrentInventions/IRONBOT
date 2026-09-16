@@ -8,7 +8,7 @@ function $(id) { return document.getElementById(id); }
 const HUD_DESIGN_W = 1600;
 const HUD_DESIGN_H = 900;
 const HUD_SCALE_MIN = 0.55;
-const HUD_SCALE_MAX = 1;
+const HUD_SCALE_MAX = 3;
 
 function autoHudScale() {
   const w = window.innerWidth || HUD_DESIGN_W;
@@ -18,7 +18,19 @@ function autoHudScale() {
 
 function fitIronHud() {
   const scale = autoHudScale();
-  document.documentElement.style.zoom = scale >= 0.995 ? "" : String(scale);
+  const stage = document.getElementById("stage");
+  document.documentElement.style.zoom = "";
+  if (stage) {
+    stage.style.width = `${HUD_DESIGN_W}px`;
+    stage.style.height = `${HUD_DESIGN_H}px`;
+    stage.style.position = "absolute";
+    stage.style.left = "50%";
+    stage.style.top = "50%";
+    stage.style.right = "auto";
+    stage.style.bottom = "auto";
+    stage.style.transformOrigin = "center center";
+    stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  }
   document.documentElement.dataset.uiScale = scale.toFixed(2);
   return scale;
 }
@@ -2126,6 +2138,7 @@ fx.dock = null;
 requestAnimationFrame(tickFx);
 fitIronHud();
 window.addEventListener("resize", fitIronHud);
+if (window.visualViewport) window.visualViewport.addEventListener("resize", fitIronHud);
 bindTabs();
 bind();
 renderStates("IDLE");

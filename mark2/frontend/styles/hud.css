@@ -131,7 +131,8 @@
 .brand-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.85rem;
   padding: 0.15rem 0.4rem 0.2rem;
 }
 
@@ -150,7 +151,7 @@
 .wordmark {
   font-family: var(--font-display);
   font-size: clamp(1.05rem, 2.6vmin, 1.75rem);
-  letter-spacing: 0.22em;
+  letter-spacing: 0.08em;
   color: var(--neon-cyan);
   text-shadow:
     0 0 12px rgba(225, 6, 0, 0.55),
@@ -160,7 +161,7 @@
 
 .wordmark span {
   color: var(--neon-magenta);
-  letter-spacing: 0.22em;
+  letter-spacing: 0.08em;
   text-shadow:
     0 0 12px rgba(255, 59, 47, 0.55),
     0 0 24px rgba(255, 59, 47, 0.2);
@@ -199,7 +200,7 @@
 .money-block {
   display: flex;
   flex-direction: column;
-  min-width: 13.5rem;
+  min-width: 8.5rem;
 }
 
 .money-block .lbl {

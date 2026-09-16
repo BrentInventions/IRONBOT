@@ -5,6 +5,25 @@ const STATES = [
 
 function $(id) { return document.getElementById(id); }
 
+const HUD_DESIGN_W = 1600;
+const HUD_DESIGN_H = 900;
+const HUD_SCALE_MIN = 0.55;
+const HUD_SCALE_MAX = 1;
+
+function autoHudScale() {
+  const w = window.innerWidth || HUD_DESIGN_W;
+  const h = window.innerHeight || HUD_DESIGN_H;
+  return Math.max(HUD_SCALE_MIN, Math.min(HUD_SCALE_MAX, w / HUD_DESIGN_W, h / HUD_DESIGN_H));
+}
+
+function fitIronHud() {
+  const scale = autoHudScale();
+  document.documentElement.style.zoom = scale >= 0.995 ? "" : String(scale);
+  document.documentElement.dataset.uiScale = scale.toFixed(2);
+  return scale;
+}
+window.fitIronHud = fitIronHud;
+
 function setBar(el, pct) {
   if (!el) return;
   el.style.width = `${Math.max(0, Math.min(100, pct))}%`;
@@ -2105,6 +2124,8 @@ for (const id of ["fx-canvas", "motes"]) {
 }
 fx.dock = null;
 requestAnimationFrame(tickFx);
+fitIronHud();
+window.addEventListener("resize", fitIronHud);
 bindTabs();
 bind();
 renderStates("IDLE");

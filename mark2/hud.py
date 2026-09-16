@@ -292,6 +292,7 @@ def run_hud(
             _hud_log(f"maximize failed: {exc}")
         try:
             window.evaluate_js(
+                "if(window.fitIronHud)window.fitIronHud();"
                 "document.querySelectorAll('canvas').forEach(function(c){"
                 "c.style.pointerEvents='none';c.style.display='none';});"
                 "['btn-enable','btn-enable-hero'].forEach(function(id){"

@@ -253,6 +253,8 @@ class Mark2Config:
     TCM8_CONSOLIDATION_LOOKBACK: int = 10
     TCM8_CONSOLIDATION_MAX_RANGE_ATR: float = 1.00
     TCM8_STOP_BUFFER_ATR: float = 0.10
+    # Live hard stop until green / $50. Structure stop stays for 8TCM R filter only.
+    TCM8_INITIAL_STOP_POINTS: float = 20.0
     TCM8_MINIMUM_TARGET_R: float = 0.75
     TCM8_PREFERRED_TARGET_R: float = 1.50
     # Bank / arm this many points in front of the raw key level. MNQ often

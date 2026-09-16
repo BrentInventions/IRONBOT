@@ -679,6 +679,28 @@ def stop_price(side: Side, ema8: float, bar: dict, atr_v: float, cfg: Mark2Confi
     return ref + buf
 
 
+def tcm8_initial_stop(entry: float, side: Side, cfg: Mark2Config | None) -> float:
+    """Hard stop until green or $50: 20 points from entry. Same for 8TCM and 9/20/50."""
+    pts = max(_tick(cfg), _f(cfg, "TCM8_INITIAL_STOP_POINTS", 20.0))
+    px = float(entry)
+    if side == Side.LONG:
+        return round(px - pts, 2)
+    return round(px + pts, 2)
+
+
+def uses_shared_tcm8_exit(tag: str) -> bool:
+    """True for 8TCM and 9/20/50 sniper fills. RSI / chop / 413 keep their own stops."""
+    t = str(tag or "")
+    if t.startswith("413"):
+        return False
+    return t not in {
+        "EMA_RSI_LONG",
+        "EMA_INTERSECT_SHORT",
+        "EMA_CHOP_LONG",
+        "HUD_MANUAL",
+    }
+
+
 def quality_grade(target_r: float) -> str:
     if target_r >= 1.50:
         return GRADE_A

@@ -105,6 +105,8 @@ from .tcm8 import (
     tcm8_enabled,
     tcm8_only_mode,
     tcm8_trade_hud,
+    tcm8_initial_stop,
+    uses_shared_tcm8_exit,
     uses_tcm8_hold,
 )
 from .tcm8_status import (
@@ -1825,6 +1827,8 @@ class Mark2Engine:
                 stop = float(self._413.stop)
                 target_pts = max(0.0, float(self._413.target) - tick.price)
                 scalp = False
+            elif uses_shared_tcm8_exit(trig):
+                stop = tcm8_initial_stop(tick.price, event.direction, self.cfg)
         else:
             stop = initial_stop(
                 tick.price,
@@ -2690,12 +2694,7 @@ class Mark2Engine:
         if not bool(getattr(t, "ema_strategy", False)):
             return
         tag = str(getattr(t, "ema_entry_tag", "") or "")
-        if tag.startswith("413") or tag in (
-            "EMA_RSI_LONG",
-            "EMA_INTERSECT_SHORT",
-            "EMA_CHOP_LONG",
-            "HUD_MANUAL",
-        ):
+        if not uses_shared_tcm8_exit(tag):
             return
         t.tcm8_hold = True
         t.tcm8_runner = False
@@ -2703,6 +2702,9 @@ class Mark2Engine:
         t.bank_dollars_locked = 0.0
         t.tip_trail_pts = float(getattr(self.cfg, "TCM8_TRAIL_POINTS", 5.5) or 5.5)
         entry = float(getattr(t, "entry", 0) or 0)
+        if entry > 0:
+            t.stop = tcm8_initial_stop(entry, t.side, self.cfg)
+            t.hard_stop = float(t.stop)
         atr_v = max(self._ema_atr(), 1e-9)
         book = getattr(self, "_barriers", None)
         zone = None
@@ -4156,10 +4158,10 @@ class Mark2Engine:
         if side == Side.NONE:
             return False
         entry = float(row.get("entry") or 0)
-        stop = float(row.get("stop") or 0)
         target = float(row.get("barrier_price") or 0)
-        if entry <= 0 or stop <= 0:
+        if entry <= 0:
             return False
+        stop = tcm8_initial_stop(entry, side, self.cfg)
         last = self.completed_bars[-1] if self.completed_bars else {}
         ts = _bar_ts(last) if last else time.time()
         tag = ENTRY_LONG if side == Side.LONG else ENTRY_SHORT

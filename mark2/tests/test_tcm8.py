@@ -60,6 +60,8 @@ from mark2.tcm8 import (
     tcm8_next_gate,
     tcm8_only_mode,
     tcm8_trade_hud,
+    tcm8_initial_stop,
+    uses_shared_tcm8_exit,
     uses_tcm8_hold,
     format_tcm8_log,
 )
@@ -188,6 +190,7 @@ def test_defaults_are_baseline_not_tuned() -> None:
     assert cfg.TCM8_CONSOLIDATION_LOOKBACK == 10
     assert abs(cfg.TCM8_CONSOLIDATION_MAX_RANGE_ATR - 1.00) < 1e-12
     assert abs(cfg.TCM8_STOP_BUFFER_ATR - 0.10) < 1e-12
+    assert abs(cfg.TCM8_INITIAL_STOP_POINTS - 20.0) < 1e-12
     assert abs(cfg.TCM8_MINIMUM_TARGET_R - 0.75) < 1e-12
     assert abs(cfg.TCM8_PREFERRED_TARGET_R - 1.50) < 1e-12
     assert abs(cfg.TCM8_TARGET_FRONT_RUN_POINTS - 1.5) < 1e-12
@@ -1043,8 +1046,51 @@ def test_ema_fill_uses_8tcm_hold() -> None:
     assert trade.tcm8 is False
     assert uses_tcm8_hold(trade) is True
     assert trade.tcm8_runner is False
+    assert abs(trade.stop - 19980.0) < 1e-9
+    assert abs(trade.hard_stop - 19980.0) < 1e-9
     # No barrier book → 1.5R fallback, same preferred R as 8TCM.
     assert abs(trade.target - 20030.0) < 1e-9
+
+
+def test_initial_stop_is_20_points_for_both_methods() -> None:
+    cfg = _cfg()
+    assert abs(tcm8_initial_stop(20000.0, Side.LONG, cfg) - 19980.0) < 1e-9
+    assert abs(tcm8_initial_stop(20000.0, Side.SHORT, cfg) - 20020.0) < 1e-9
+    assert uses_shared_tcm8_exit("EMA_SNIPER") is True
+    assert uses_shared_tcm8_exit("8TCM_LONG") is True
+    assert uses_shared_tcm8_exit("413_BREAKOUT") is False
+    eng = Mark2Engine(cfg)
+    eng.execution.enter = lambda intent: "PAPER_EXECUTE"  # type: ignore[method-assign]
+    eng.acct_risk.clamp_qty = lambda q: q  # type: ignore[method-assign]
+    assert eng._tcm8_execute(
+        {
+            "direction": "LONG",
+            "entry": 20000.0,
+            "stop": 19996.0,
+            "barrier_price": 20040.0,
+            "atr": 4.0,
+        }
+    )
+    assert eng.paper is not None
+    assert abs(eng.paper.stop - 19980.0) < 1e-9
+    assert abs(eng.paper.hard_stop - 19980.0) < 1e-9
+    tight = PaperTrade(
+        side=Side.LONG,
+        entry=20000.0,
+        entry_ts=1.0,
+        stop=19996.0,
+        target=20012.5,
+        peak=20000.0,
+        trough=20000.0,
+        hard_stop=19996.0,
+        ema_strategy=True,
+        ema_entry_tag="EMA_SNIPER",
+        qty=1,
+    )
+    eng.paper = tight
+    eng._stamp_tcm8_hold()
+    assert abs(tight.stop - 19980.0) < 1e-9
+    assert abs(tight.hard_stop - 19980.0) < 1e-9
 
 
 def test_ema_fill_uses_key_level_target() -> None:

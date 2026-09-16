@@ -87,11 +87,11 @@ namespace NinjaTrader.NinjaScript.Strategies
 				SeedBars = 400;
 				TickThrottleMs = 50;
 				StreamTicks = true;
-				AddPlot(new Stroke(Brushes.Red, 2), PlotStyle.Line, "EMA9");
-				AddPlot(new Stroke(Brushes.White, 2), PlotStyle.Line, "EMA20");
-				AddPlot(new Stroke(Brushes.DodgerBlue, 2), PlotStyle.Line, "EMA50");
-				AddPlot(new Stroke(Brushes.Orange, 2), PlotStyle.Line, "EMA8 1m");
-				AddPlot(new Stroke(Brushes.Gold, 3), PlotStyle.Line, "EMA8 1H");
+				AddPlot(new Stroke(Brushes.Red, 4), PlotStyle.Line, "EMA9");
+				AddPlot(new Stroke(Brushes.White, 4), PlotStyle.Line, "EMA20");
+				AddPlot(new Stroke(Brushes.DodgerBlue, 4), PlotStyle.Line, "EMA50");
+				AddPlot(new Stroke(Brushes.Orange, 4), PlotStyle.Line, "EMA8 1m");
+				AddPlot(new Stroke(Brushes.Gold, 4), PlotStyle.Line, "EMA8 1H");
 			}
 			else if (State == State.Configure)
 			{
@@ -608,6 +608,16 @@ namespace NinjaTrader.NinjaScript.Strategies
 				return;
 			// Always draw the three lines. Do not flip Plot.Brush — that greys
 			// the strategy plot checkboxes in NT and hides the lines.
+			try
+			{
+				if (Plots != null)
+				{
+					int n = Math.Min(Plots.Length, 5);
+					for (int i = 0; i < n; i++)
+						Plots[i].Width = 4;
+				}
+			}
+			catch { }
 			if (CurrentBar >= 8 && ema9Ind != null)
 				Values[0][0] = ema9Ind[0];
 			if (CurrentBar >= 19 && ema20Ind != null)

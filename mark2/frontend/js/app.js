@@ -8,28 +8,32 @@ function $(id) { return document.getElementById(id); }
 const HUD_DESIGN_W = 1600;
 const HUD_DESIGN_H = 900;
 const HUD_SCALE_MIN = 0.55;
-const HUD_SCALE_MAX = 3;
-
-function autoHudScale() {
-  const w = window.innerWidth || HUD_DESIGN_W;
-  const h = window.innerHeight || HUD_DESIGN_H;
-  return Math.max(HUD_SCALE_MIN, Math.min(HUD_SCALE_MAX, w / HUD_DESIGN_W, h / HUD_DESIGN_H));
-}
 
 function fitIronHud() {
-  const scale = autoHudScale();
   const stage = document.getElementById("stage");
   document.documentElement.style.zoom = "";
-  if (stage) {
-    stage.style.width = `${HUD_DESIGN_W}px`;
-    stage.style.height = `${HUD_DESIGN_H}px`;
-    stage.style.position = "absolute";
-    stage.style.left = "50%";
-    stage.style.top = "50%";
-    stage.style.right = "auto";
-    stage.style.bottom = "auto";
-    stage.style.transformOrigin = "center center";
-    stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  if (!stage) return 1;
+  const w = window.innerWidth || HUD_DESIGN_W;
+  const h = window.innerHeight || HUD_DESIGN_H;
+  stage.style.position = "absolute";
+  stage.style.left = "0";
+  stage.style.top = "0";
+  stage.style.right = "auto";
+  stage.style.bottom = "auto";
+  stage.style.width = "100vw";
+  stage.style.height = "100vh";
+  stage.style.transform = "";
+  stage.style.transformOrigin = "0 0";
+  stage.style.overflow = "hidden";
+  const shell = stage.querySelector(".hud-shell");
+  const needW = Math.max(stage.scrollWidth || 0, shell ? shell.scrollWidth : 0, 1);
+  const needH = Math.max(stage.scrollHeight || 0, shell ? shell.scrollHeight : 0, 1);
+  let scale = Math.min(1, w / needW, h / needH);
+  scale = Math.max(HUD_SCALE_MIN, scale);
+  if (scale < 0.995) {
+    stage.style.width = `${w / scale}px`;
+    stage.style.height = `${h / scale}px`;
+    stage.style.transform = `scale(${scale})`;
   }
   document.documentElement.dataset.uiScale = scale.toFixed(2);
   return scale;
@@ -1910,6 +1914,7 @@ function bindTabs() {
       if (!name) return;
       tabs.forEach((t) => t.classList.toggle("is-active", t === tab));
       views.forEach((v) => v.classList.toggle("is-active", v.id === `view-${name}`));
+      fitIronHud();
     });
   });
 }
@@ -2137,6 +2142,7 @@ for (const id of ["fx-canvas", "motes"]) {
 fx.dock = null;
 requestAnimationFrame(tickFx);
 fitIronHud();
+requestAnimationFrame(fitIronHud);
 window.addEventListener("resize", fitIronHud);
 if (window.visualViewport) window.visualViewport.addEventListener("resize", fitIronHud);
 bindTabs();

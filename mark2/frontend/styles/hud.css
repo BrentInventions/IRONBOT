@@ -1154,7 +1154,7 @@
 
 .stats-decisions {
   flex: 1.35;
-  min-height: 8.5rem;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 0.22rem;
@@ -1904,9 +1904,9 @@ button.btn-sell:hover:not(:disabled) {
   .hud-sweep, .boot .panel.glass, .scanlines { animation: none; }
 }
 
-/* Event Engine — RSI stays at the top so value, bar, and OS/OB labels are never clipped */
+/* Event Engine — shrink with the window so EXIT / CTRL are not clipped off-screen */
 #core-panel {
-  min-height: 20rem;
+  min-height: 0;
 }
 
 #core-panel .panel-body {

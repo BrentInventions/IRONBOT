@@ -2,11 +2,9 @@
 
 .stage {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 1600px;
-  height: 900px;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
   isolation: isolate;
   background: var(--bg-0);
@@ -214,7 +212,7 @@
 
 .hud-grid-trade {
   flex: 1;
-  grid-template-rows: minmax(22rem, 1.7fr) minmax(6.4rem, 0.48fr) minmax(12.5rem, 1fr);
+  grid-template-rows: minmax(0, 1.65fr) minmax(5rem, 0.52fr) minmax(0, 1fr);
   grid-template-areas:
     "long  core  stats"
     "exit  exit  exit"

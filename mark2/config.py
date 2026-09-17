@@ -312,10 +312,9 @@ class Mark2Config:
     AI_SCOUT_MAX_EXT_ATR: float = 2.8
     # Wall-clock pause after a flatten so the next hop is not the same trade.
     EMA_REENTRY_COOLDOWN_SEC: float = 5.0
-    # After 8TCM flats, 9/20/50 cannot enter (and the reverse). Stops a short
-    # from killing an 8TCM runner the moment the slot frees.
-    METHOD_SWITCH_COOLDOWN_SEC: float = 180.0
-    RUNNER_SWITCH_COOLDOWN_SEC: float = 300.0
+    # After 8TCM flats, 9/20/50 cannot enter (and the reverse). 10s either way.
+    METHOD_SWITCH_COOLDOWN_SEC: float = 10.0
+    RUNNER_SWITCH_COOLDOWN_SEC: float = 10.0
     # Intersection only. Leftover stacks, chop whites, and fade shorts stay off.
     EMA_BULL_FADE_SHORT: bool = False
     EMA_LONG_SNIPER: bool = True

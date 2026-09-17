@@ -2780,8 +2780,8 @@ class Mark2Engine:
         if not method:
             return
         runner = bool(getattr(trade, "tcm8_runner", False) or getattr(trade, "tcm8_primary_hit", False))
-        base = float(getattr(self.cfg, "METHOD_SWITCH_COOLDOWN_SEC", 180.0) or 0.0)
-        extra = float(getattr(self.cfg, "RUNNER_SWITCH_COOLDOWN_SEC", 300.0) or 0.0)
+        base = float(getattr(self.cfg, "METHOD_SWITCH_COOLDOWN_SEC", 10.0) or 0.0)
+        extra = float(getattr(self.cfg, "RUNNER_SWITCH_COOLDOWN_SEC", 10.0) or 0.0)
         sec = extra if runner and extra > 0 else base
         if sec <= 0:
             return

@@ -191,8 +191,8 @@ def test_defaults_are_baseline_not_tuned() -> None:
     assert abs(cfg.TCM8_CONSOLIDATION_MAX_RANGE_ATR - 1.00) < 1e-12
     assert abs(cfg.TCM8_STOP_BUFFER_ATR - 0.10) < 1e-12
     assert abs(cfg.TCM8_INITIAL_STOP_POINTS - 20.0) < 1e-12
-    assert abs(cfg.METHOD_SWITCH_COOLDOWN_SEC - 180.0) < 1e-12
-    assert abs(cfg.RUNNER_SWITCH_COOLDOWN_SEC - 300.0) < 1e-12
+    assert abs(cfg.METHOD_SWITCH_COOLDOWN_SEC - 10.0) < 1e-12
+    assert abs(cfg.RUNNER_SWITCH_COOLDOWN_SEC - 10.0) < 1e-12
     assert abs(cfg.TCM8_MINIMUM_TARGET_R - 0.75) < 1e-12
     assert abs(cfg.TCM8_PREFERRED_TARGET_R - 1.50) < 1e-12
     assert abs(cfg.TCM8_TARGET_FRONT_RUN_POINTS - 1.5) < 1e-12
@@ -967,7 +967,7 @@ def test_8tcm_runner_blocks_92050_short() -> None:
     assert eng._last_exit_method == "tcm8"
     assert eng._method_switch_blocked("ema") is True
     assert eng._method_switch_blocked("tcm8") is False
-    assert eng._method_switch_left("ema") > 200.0
+    assert 8.0 < eng._method_switch_left("ema") <= 10.0
     eng._last_exit_wall = 0.0
     eng._ema_try_arm_signal(Side.SHORT, None, allow_entry=True, why="EMA_SNIPER_SHORT")
     assert eng.paper is None

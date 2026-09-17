@@ -363,6 +363,8 @@ class Mark2Engine:
         self._scout_long_taken: bool = False
         self._scout_short_taken: bool = False
         self._last_exit_wall: float = 0.0
+        self._last_exit_method: str = ""
+        self._method_lock_until: float = 0.0
         if bool(getattr(self.cfg, "ENABLE_BOOK_PATTERNS", False)):
             # Settings already had book mode — lock the book-only gate set.
             enforce_book_mode_gates(self.cfg)
@@ -1789,6 +1791,8 @@ class Mark2Engine:
     ) -> str:
         if self._trade_slot_busy():
             return "IN_TRADE"
+        if event.event_type == EventType.EMA_CROSS and self._method_switch_blocked("ema"):
+            return "METHOD_COOLDOWN"
         if self.goal_met:
             return "GOAL_HIT"
         self.sm.execute()
@@ -2325,6 +2329,7 @@ class Mark2Engine:
         self._ema_exit_armed = False
         self._ema_clear_setup()
         self._last_exit_wall = time.time()
+        self._stamp_method_switch_lock(t)
         if bool(getattr(t, "tcm8", False)):
             publish_from_engine(
                 self,
@@ -2762,6 +2767,44 @@ class Mark2Engine:
 
     def _trade_gap_blocked(self) -> bool:
         return self._trade_gap_left() > 1e-9
+
+    def _exit_method_name(self, trade) -> str:
+        if trade is None:
+            return ""
+        if bool(getattr(trade, "tcm8", False)):
+            return "tcm8"
+        return "ema"
+
+    def _stamp_method_switch_lock(self, trade) -> None:
+        method = self._exit_method_name(trade)
+        if not method:
+            return
+        runner = bool(getattr(trade, "tcm8_runner", False) or getattr(trade, "tcm8_primary_hit", False))
+        base = float(getattr(self.cfg, "METHOD_SWITCH_COOLDOWN_SEC", 180.0) or 0.0)
+        extra = float(getattr(self.cfg, "RUNNER_SWITCH_COOLDOWN_SEC", 300.0) or 0.0)
+        sec = extra if runner and extra > 0 else base
+        if sec <= 0:
+            return
+        self._last_exit_method = method
+        self._method_lock_until = time.time() + sec
+        other = "9/20/50" if method == "tcm8" else "8TCM"
+        print(
+            f"METHOD COOLDOWN  {other} blocked {sec:.0f}s after {method.upper()}"
+            f"{' RUNNER' if runner else ''}",
+            flush=True,
+        )
+
+    def _method_switch_left(self, incoming: str) -> float:
+        until = float(getattr(self, "_method_lock_until", 0) or 0)
+        if until <= 0:
+            return 0.0
+        last = str(getattr(self, "_last_exit_method", "") or "")
+        if not last or last == incoming:
+            return 0.0
+        return max(0.0, until - time.time())
+
+    def _method_switch_blocked(self, incoming: str) -> bool:
+        return self._method_switch_left(incoming) > 1e-9
 
     def _scout_on_flat(
         self,
@@ -3513,12 +3556,18 @@ class Mark2Engine:
             return
         if not allow_entry or side == Side.NONE:
             return
-        if self._trade_gap_blocked():
-            left = self._trade_gap_left()
+        if self._trade_gap_blocked() or self._method_switch_blocked("ema"):
+            left = max(self._trade_gap_left(), self._method_switch_left("ema"))
+            tag = "METHOD_COOLDOWN" if self._method_switch_blocked("ema") else "COOLDOWN"
+            extra = (
+                f"{left:.0f}s after 8TCM"
+                if tag == "METHOD_COOLDOWN"
+                else f"{left:.0f}s left"
+            )
             self._ema_feed(
                 side=side.value,
-                tag="COOLDOWN",
-                extra=f"{left:.0f}s left",
+                tag=tag,
+                extra=extra,
                 tick_bucket=True,
                 stack=stack,
             )
@@ -4137,7 +4186,7 @@ class Mark2Engine:
             setup=self._tcm8,
             armed=bool(self.cfg.MARK2_ENABLED),
             connected=bool(self.risk.connected),
-            cooldown=self._trade_gap_blocked(),
+            cooldown=self._trade_gap_blocked() or self._method_switch_blocked("tcm8"),
             allow_long=bool(getattr(self.cfg, "ENABLE_8TCM_LONGS", True)),
             allow_short=bool(getattr(self.cfg, "ENABLE_8TCM_SHORTS", False)),
         )
@@ -4150,6 +4199,8 @@ class Mark2Engine:
 
     def _tcm8_execute(self, row: dict[str, Any]) -> bool:
         if self._trade_slot_busy():
+            return False
+        if self._method_switch_blocked("tcm8"):
             return False
         if self.goal_met:
             return False
@@ -4686,26 +4737,35 @@ class Mark2Engine:
             return {"state": self.sm.state.value, "decision": "DISABLED"}
         if self.goal_met:
             return {"state": self.sm.state.value, "decision": "GOAL_HIT"}
-        if self._trade_gap_blocked():
-            left = self._trade_gap_left()
+        if self._trade_gap_blocked() or self._method_switch_blocked("ema"):
+            left = max(self._trade_gap_left(), self._method_switch_left("ema"))
+            method_cd = self._method_switch_blocked("ema")
             if self._ema_pending_side != Side.NONE or self._ema_pullback is not None:
                 self._ema_clear_setup()
             self._scout_view = ScoutView(
                 action="HOLD",
-                why="COOLDOWN",
+                why="METHOD_COOLDOWN" if method_cd else "COOLDOWN",
                 bullets=[
-                    f"PAUSE {left:.1f}S · NO BACK TO BACK",
+                    (
+                        f"PAUSE {left:.1f}S · 9/20/50 WAITS AFTER 8TCM"
+                        if method_cd
+                        else f"PAUSE {left:.1f}S · NO BACK TO BACK"
+                    ),
                     "NEXT ENTRY MUST STILL FIT THE CROSS",
                 ],
             )
             self.sm.state = EngineState.WATCHING
             self._ema_feed(
                 side="LONG",
-                tag="COOLDOWN",
-                extra=f"{left:.0f}s left",
+                tag="METHOD_COOLDOWN" if method_cd else "COOLDOWN",
+                extra=f"{left:.0f}s after 8TCM" if method_cd else f"{left:.0f}s left",
                 tick_bucket=True,
             )
-            return {"state": self.sm.state.value, "decision": "WAIT", "reject": "COOLDOWN"}
+            return {
+                "state": self.sm.state.value,
+                "decision": "WAIT",
+                "reject": "METHOD_COOLDOWN" if method_cd else "COOLDOWN",
+            }
         self._ema_scan_live_long()
         side = self._ema_pending_side
         stack = read_ema_stack(self._ema_live_bars(), self.cfg)

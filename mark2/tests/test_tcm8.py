@@ -191,6 +191,8 @@ def test_defaults_are_baseline_not_tuned() -> None:
     assert abs(cfg.TCM8_CONSOLIDATION_MAX_RANGE_ATR - 1.00) < 1e-12
     assert abs(cfg.TCM8_STOP_BUFFER_ATR - 0.10) < 1e-12
     assert abs(cfg.TCM8_INITIAL_STOP_POINTS - 20.0) < 1e-12
+    assert abs(cfg.METHOD_SWITCH_COOLDOWN_SEC - 180.0) < 1e-12
+    assert abs(cfg.RUNNER_SWITCH_COOLDOWN_SEC - 300.0) < 1e-12
     assert abs(cfg.TCM8_MINIMUM_TARGET_R - 0.75) < 1e-12
     assert abs(cfg.TCM8_PREFERRED_TARGET_R - 1.50) < 1e-12
     assert abs(cfg.TCM8_TARGET_FRONT_RUN_POINTS - 1.5) < 1e-12
@@ -941,6 +943,69 @@ def test_8tcm_and_ema_share_one_trade_slot() -> None:
     ) is False
     snap = eng.hud_snapshot()
     assert snap["kickerLong"] == "8TCM LONG"
+
+
+def test_8tcm_runner_blocks_92050_short() -> None:
+    cfg = _cfg()
+    apply_strategy(cfg, {"tcm8": True, "ema_92050": True})
+    eng = Mark2Engine(cfg)
+    runner = PaperTrade(
+        side=Side.LONG,
+        entry=20000.0,
+        entry_ts=1.0,
+        stop=19980.0,
+        target=20040.0,
+        peak=20050.0,
+        trough=20000.0,
+        hard_stop=19980.0,
+        tcm8=True,
+        tcm8_runner=True,
+        tcm8_primary_hit=True,
+        qty=1,
+    )
+    eng._stamp_method_switch_lock(runner)
+    assert eng._last_exit_method == "tcm8"
+    assert eng._method_switch_blocked("ema") is True
+    assert eng._method_switch_blocked("tcm8") is False
+    assert eng._method_switch_left("ema") > 200.0
+    eng._last_exit_wall = 0.0
+    eng._ema_try_arm_signal(Side.SHORT, None, allow_entry=True, why="EMA_SNIPER_SHORT")
+    assert eng.paper is None
+    assert eng._ema_pending_side == Side.NONE
+    eng._method_lock_until = 0.0
+    assert eng._method_switch_blocked("ema") is False
+
+
+def test_92050_exit_blocks_8tcm() -> None:
+    cfg = _cfg()
+    apply_strategy(cfg, {"tcm8": True, "ema_92050": True})
+    eng = Mark2Engine(cfg)
+    ema = PaperTrade(
+        side=Side.SHORT,
+        entry=20000.0,
+        entry_ts=1.0,
+        stop=20020.0,
+        target=19960.0,
+        peak=20000.0,
+        trough=19990.0,
+        hard_stop=20020.0,
+        ema_strategy=True,
+        tcm8_hold=True,
+        qty=1,
+    )
+    eng._stamp_method_switch_lock(ema)
+    assert eng._last_exit_method == "ema"
+    assert eng._method_switch_blocked("tcm8") is True
+    assert eng._method_switch_blocked("ema") is False
+    assert eng._tcm8_execute(
+        {
+            "direction": "LONG",
+            "entry": 20000.0,
+            "stop": 19980.0,
+            "barrier_price": 20040.0,
+            "atr": 4.0,
+        }
+    ) is False
 
 
 def test_8tcm_on_does_not_force_ema_92050() -> None:

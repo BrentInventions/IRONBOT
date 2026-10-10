@@ -6,7 +6,18 @@ NT chart overlay is **lines only** (gold entry, red stop, green target, purple t
 
 ## Willie PC install
 
+Open Command Prompt, then clone onto the Desktop. Cloning from `C:\` or another protected folder fails with `could not create work tree dir 'IRONBOT': Permission denied`.
+
 ```bat
+cd %USERPROFILE%\Desktop
+git clone https://github.com/BrentInventions/IRONBOT.git
+cd IRONBOT
+```
+
+If that still says Permission denied, use Documents instead:
+
+```bat
+cd %USERPROFILE%\Documents
 git clone https://github.com/BrentInventions/IRONBOT.git
 cd IRONBOT
 ```
